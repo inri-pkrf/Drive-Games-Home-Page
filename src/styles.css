@@ -54,3 +54,12 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;background:none
 .tab{position:absolute;left:0;top:50%;margin-top:-65px;width:96px;height:130px;border-radius:0 80px 80px 0;background:#14405fd9;color:#fff;font-size:56px;z-index:5;opacity:.85}
 .cta2{font-family:'Karantina',sans-serif;font-weight:700;font-size:100px;line-height:1.1;padding:0 0 12px;border-radius:40px;background:#fdc43f;color:#14405f;margin-top:10px}
 .fsb{position:absolute;top:40px;left:40px;z-index:2;font-size:34px;font-weight:800;padding:14px 34px;border-radius:40px;background:#e6edf2}
+
+.gear{position:absolute;top:40px;right:40px;z-index:2;width:90px;height:90px;border-radius:50%;font-size:44px;background:#e6edf2;opacity:.4}
+.dots{display:flex;gap:24px;justify-content:center;margin:10px 0 20px}
+.dots i{width:36px;height:36px;border-radius:50%;border:5px solid #14405f}.dots i.on{background:#14405f}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pad button{height:130px;border-radius:30px;background:#e6edf2;font-size:64px;font-weight:800;color:#14405f}
+.pad button:active{background:#fdc43f}
+.row{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.mini{font-size:34px;font-weight:800;padding:10px 30px;border-radius:30px;background:#ef5360;color:#fff}

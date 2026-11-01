@@ -3,6 +3,7 @@ import { GAMES } from './games.js';
 import logo from './assets/logo.png';
 
 const SESSION = 180000, WARN = 15; // אחרי 3 דקות במשחק: שאלה "עדיין משחקים?" ואז חזרה אוטומטית
+const ADMIN_PIN = '7707'; // קוד המנהל לאיפוס מונים (4 ספרות)
 const KEY = 'college-hub-stats';
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
 const save = s => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
@@ -33,6 +34,16 @@ export default function App() {
   const [s, setS] = useState(1), [H, setH] = useState(1920), [stats, setStats] = useState(load), [cur, setCur] = useState(null);
   const [admin, setAdmin] = useState(false), [sure, setSure] = useState(false);
   const [menu, setMenu] = useState(false), [warn, setWarn] = useState(null), [fs, setFs] = useState(false);
+  const [pinOpen, setPinOpen] = useState(false), [entered, setEntered] = useState('');
+  const closePin = () => { setPinOpen(false); setEntered(''); };
+  const press = k => {
+    if (k === '✕') return closePin();
+    if (k === '⌫') return setEntered(e => e.slice(0, -1));
+    const e = entered + k;
+    if (e.length < 4) return setEntered(e);
+    if (e === ADMIN_PIN) { closePin(); setAdmin(true); } else setEntered('');
+  };
+  const resetOne = id => { const n = { ...stats, [id]: 0 }; setStats(n); save(n); };
   const hold = useRef();
   const home = () => { setCur(null); setMenu(false); setWarn(null); };
   const toggleFs = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch {} };
@@ -63,6 +74,7 @@ export default function App() {
                   <div className="h3">{cur.title}</div>
                   <button className="cta2" onClick={home}>חזרה לתפריט</button>
                   <button className="ghost" onClick={toggleFs}>{fs ? 'יציאה ממסך מלא' : 'מסך מלא'}</button>
+            <button className="gear" aria-label="ניהול" onClick={() => setPinOpen(true)}>⚙️</button>
                   <button className="ghost" onClick={() => setMenu(false)}>המשך משחק</button>
                 </div>
               </div>
@@ -83,7 +95,7 @@ export default function App() {
             <i className="blob b1" /><i className="blob b2" /><i className="blob b3" />
             <button className="fsb" onClick={toggleFs}>{fs ? 'יציאה ממסך מלא' : 'מסך מלא'}</button>
             <img className="logo" src={logo} alt="המכללה הלאומית לאיתנות ישראלית"
-              onPointerDown={() => (hold.current = setTimeout(() => setAdmin(true), 2500))}
+              onPointerDown={() => (hold.current = setTimeout(() => setPinOpen(true), 2500))}
               onPointerUp={() => clearTimeout(hold.current)} onPointerLeave={() => clearTimeout(hold.current)} />
             <h1 className="title">המכללה הלאומית<br />נזהרת בדרכים</h1>
             <div className="strip">{['#f58a3c', '#fdc43f', '#ef5360', '#3bb08a', '#1fb5e6', '#1b7a9e'].map(c => <i key={c} style={{ background: c }} />)}</div>
@@ -92,13 +104,24 @@ export default function App() {
             <div className="total"><span>סה״כ נכנסו למשחקים</span><b><Num n={total} /></b></div>
           </div>
         )}
+        {pinOpen && (
+          <div className="adm" onClick={closePin}>
+            <div className="box" onClick={e => e.stopPropagation()}>
+              <div className="h3">קוד מנהל</div>
+              <div className="dots">{[0, 1, 2, 3].map(k => <i key={k} className={k < entered.length ? 'on' : ''} />)}</div>
+              <div className="pad">{[1, 2, 3, 4, 5, 6, 7, 8, 9, '✕', 0, '⌫'].map(k => <button key={k} onClick={() => press(k)}>{k}</button>)}</div>
+            </div>
+          </div>
+        )}
         {admin && (
           <div className="adm" onClick={() => { setAdmin(false); setSure(false); }}>
             <div className="box" onClick={e => e.stopPropagation()}>
               <div className="h3">סטטיסטיקה</div>
-              {GAMES.map(g => <p key={g.id}>{g.title}: <b>{stats[g.id] || 0}</b></p>)}
+              {GAMES.map(g => (
+                <div className="row" key={g.id}><span>{g.title}: <b>{stats[g.id] || 0}</b></span><button className="mini" onClick={() => resetOne(g.id)}>איפוס</button></div>
+              ))}
               <p>סה״כ: <b>{total}</b></p>
-              <button className="danger" onClick={reset}>{sure ? 'לחצו שוב לאישור איפוס' : 'איפוס מונים'}</button>
+              <button className="danger" onClick={reset}>{sure ? 'לחצו שוב לאישור איפוס' : 'איפוס כל המונים'}</button>
               <button className="ghost" onClick={() => { setAdmin(false); setSure(false); }}>סגירה</button>
             </div>
           </div>
