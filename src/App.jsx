@@ -30,7 +30,7 @@ function Card({ g, n, max, i, onOpen }) {
 }
 
 export default function App() {
-  const [s, setS] = useState(1), [stats, setStats] = useState(load), [cur, setCur] = useState(null);
+  const [s, setS] = useState(1), [H, setH] = useState(1920), [stats, setStats] = useState(load), [cur, setCur] = useState(null);
   const [admin, setAdmin] = useState(false), [sure, setSure] = useState(false);
   const [menu, setMenu] = useState(false), [warn, setWarn] = useState(null), [fs, setFs] = useState(false);
   const hold = useRef();
@@ -41,7 +41,7 @@ export default function App() {
   useEffect(() => { if (warn === null) return; if (warn <= 0) { home(); return; } const t = setTimeout(() => setWarn(warn - 1), 1000); return () => clearTimeout(t); }, [warn]);
 
   useEffect(() => {
-    const f = () => setS(Math.min(innerWidth / 1080, innerHeight / 1920));
+    const f = () => { const k = Math.min(innerWidth / 1080, innerHeight / 1700); setS(k); setH(Math.max(1700, innerHeight / k)); };
     f(); addEventListener('resize', f); return () => removeEventListener('resize', f);
   }, []);
 
@@ -52,7 +52,7 @@ export default function App() {
 
   return (
     <div className="wrap">
-      <div className="stage" style={{ transform: `translate(-50%,-50%) scale(${s})` }}>
+      <div className="stage" style={{ height: H, transform: `translate(-50%,-50%) scale(${s})` }}>
         {cur ? (
           <div className="play">
             <iframe title={cur.title} src={cur.url} allow="fullscreen" />
